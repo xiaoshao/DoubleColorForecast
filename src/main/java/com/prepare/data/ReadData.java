@@ -1,5 +1,6 @@
 package com.prepare.data;
 
+import com.google.common.collect.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,26 +16,26 @@ public class ReadData {
     String site = "http://www.17500.cn/ssq/details.php?issue=";
     int maxForYear = 200;
 
-    public Map<Integer, List<int[]>> readAllData(){
+    public Map<Integer, Map<Integer, int[]>> readAllData(){
         int startYear = 2003;
         int endYear = 2018;
 
-        Map<Integer, List<int[]>> allData = new HashMap<>();
+        Map<Integer, Map<Integer, int[]>> allData = new HashMap<>();
 
-        for(int year = startYear; year <= endYear; year ++){
+        for(Integer year = startYear; year <= endYear; year ++){
             allData.put(year, readDataByYear(year));
         }
+
         return allData;
     }
 
-    public List<int[]> readDataByYear(int year){
-        List<int[]> records = new ArrayList<>();
-
+    public Map<Integer, int[]> readDataByYear(int year){
+        Map<Integer, int[]> records = new HashMap<>();
         for(int index = 1; index <= maxForYear; index ++){
             String no = formatNo(year, index);
             int[] record = getRecord(no);
             if(record != null){
-                records.add(record);
+                records.put(index, record);
             }
         }
 
