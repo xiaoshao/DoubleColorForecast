@@ -17,10 +17,11 @@ public class Main {
 
         ReadData readData = new ReadData();
 
-        Map<Integer, Map<Integer, int[]>> allDatas = readData.readAllData();
-
-        RedisAccess redisAccess = new RedisAccess(host, port);
-
-        redisAccess.addDatas(allDatas);
+//        readData.getRecord("2003001");
+//        Map<Integer, Map<Integer, int[]>> allDatas = readData.readAllData();
+//
+//        RedisAccess redisAccess = new RedisAccess(host, port);
+//
+//        redisAccess.addDatas(allDatas);
     }
 }

@@ -1,10 +1,9 @@
 package com.prepare.data;
 
-import com.google.common.collect.*;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import com.InitHistoryDataException;
+import com.alibaba.fastjson.JSONObject;
+import com.data.Record;
+import okhttp3.*;
 
 import java.util.*;
 
@@ -13,65 +12,95 @@ import java.util.*;
  */
 public class ReadData {
 
-    String site = "http://www.17500.cn/ssq/details.php?issue=";
-    int maxForYear = 200;
+    private String site = "http://sina.aicai.com/kaijiang/open/historyIssue.do";
+    private int maxForYear = 100;
 
-    public Map<Integer, Map<Integer, int[]>> readAllData(){
+
+    public Map<Integer, Map<Integer, Record>> readAllData() {
         int startYear = 2003;
-        int endYear = 2018;
+        int endYear = 2020;
 
-        Map<Integer, Map<Integer, int[]>> allData = new HashMap<>();
+        Map<Integer, Map<Integer, Record>> allData = new HashMap<>();
 
-        for(Integer year = startYear; year <= endYear; year ++){
+        for (Integer year = startYear; year <= endYear; year++) {
             allData.put(year, readDataByYear(year));
         }
 
         return allData;
     }
 
-    public Map<Integer, int[]> readDataByYear(int year){
-        Map<Integer, int[]> records = new HashMap<>();
-        for(int index = 1; index <= maxForYear; index ++){
+    public Map<Integer, Record> readDataByYear(int year) {
+        Map<Integer, Record> records = new HashMap<>();
+        for (int index = 1; index <= maxForYear; index++) {
             String no = formatNo(year, index);
-            int[] record = getRecord(no);
-            if(record != null){
-                records.put(index, record);
+            try {
+                Optional<Record> recordOpt = getRecord(no);
+                if (recordOpt.isPresent()) {
+                    records.put(index, recordOpt.get());
+                } else {
+                    
+                }
+            } catch (InitHistoryDataException e) {
+                e.printStackTrace();
             }
+
         }
 
         return records;
     }
 
-    private int[] getRecord(String no) {
-
+    private Optional<Record> getRecord(String no) throws InitHistoryDataException {
         try {
+            OkHttpClient okHttpClient = new OkHttpClient();
+            Request.Builder builder = new Request.Builder();
+            RequestBody formBody = new FormBody.Builder()
+                    .add("gameIndex", "101")
+                    .add("issueNo", no)
+                    .build();
+            Request request = builder.url(site).post(formBody).build();
+            Response response = okHttpClient.newCall(request).execute();
 
-            Document doc = Jsoup.connect(site + no).get();
-            Elements elements = doc.select("tr[bgcolor='#ffffff']>td>font");
-            if(elements.size() == 0){
-                return null;
+            if (response.isSuccessful()) {
+                return Optional.of(parseRecord(no, response.body().string()));
+            } else {
+                return Optional.empty();
             }
-            int[] nos = new int[7];
-            int index = 0;
-            Iterator<Element> it = elements.iterator();
-            while (it.hasNext()){
-                String text = it.next().text();
-
-                nos[index ++] = Integer.valueOf(text);
-            }
-
-            return nos;
-
         } catch (Exception e) {
-            return null;
+            throw new InitHistoryDataException("request Exception");
         }
+    }
 
+
+    private Record parseRecord(String issueNo, String responseData) {
+        JSONObject obj = JSONObject.parseObject(responseData);
+        String openResult = obj.getString("openResult");
+        return parseOpenResult(issueNo, openResult);
+    }
+
+    private Record parseOpenResult(String issueNo, String openResult) {
+        //"<i>18</i><i>19</i><i>21</i><i>26</i><i>27</i><i>33</i><i class='blue'>16</i>"
+
+        String splitter = "<i>";
+        String splitter1 = "</i>";
+        String splitter2 = "<i class='blue'>";
+        String data = openResult.replaceAll(splitter, "");
+        data = data.replaceAll(splitter2, "");
+        data = data.replaceAll(splitter1, ",");
+        List<Integer> reds = new ArrayList<>();
+        String[] res = data.split(",");
+
+        reds.add(Integer.parseInt(res[0]));
+        reds.add(Integer.parseInt(res[1]));
+        reds.add(Integer.parseInt(res[2]));
+        reds.add(Integer.parseInt(res[3]));
+        reds.add(Integer.parseInt(res[4]));
+        reds.add(Integer.parseInt(res[5]));
+
+        return new Record(issueNo, reds, Integer.parseInt(res[6]));
     }
 
     private String formatNo(int year, int index) {
         String sub = "000" + index;
-
-
         return String.valueOf(year) + sub.substring(sub.length() - 3, sub.length());
     }
 }
