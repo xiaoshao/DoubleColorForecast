@@ -3,50 +3,89 @@ package com.prepare.data;
 import com.InitHistoryDataException;
 import com.alibaba.fastjson.JSONObject;
 import com.data.Record;
+import com.data.common.Const;
+import com.google.common.collect.Lists;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by zwshao on 6/4/2018.
  */
 public class ReadData {
 
+    private Logger logger = LoggerFactory.getLogger(ReadData.class);
     private String site = "http://sina.aicai.com/kaijiang/open/historyIssue.do";
     private int maxForYear = 100;
+    private String year;
+    private Jedis jedis;
+    private String errorKey;
+    private String storageKey;
+    private int startNo = -1;
 
-
-    public Map<Integer, Map<Integer, Record>> readAllData() {
-        int startYear = 2003;
-        int endYear = 2020;
-
-        Map<Integer, Map<Integer, Record>> allData = new HashMap<>();
-
-        for (Integer year = startYear; year <= endYear; year++) {
-            allData.put(year, readDataByYear(year));
-        }
-
-        return allData;
+    public ReadData(Jedis jedis, String year) {
+        this.year = year;
+        this.jedis = jedis;
+        this.errorKey = Const.HISTORY_DATA_PREFIX + "error|" + year;
+        this.storageKey = Const.HISTORY_DATA_PREFIX + year;
     }
 
-    public Map<Integer, Record> readDataByYear(int year) {
-        Map<Integer, Record> records = new HashMap<>();
-        for (int index = 1; index <= maxForYear; index++) {
-            String no = formatNo(year, index);
+    public ReadData(Jedis jedis, String year, int startNo) {
+        this(jedis, year);
+        if (startNo >= 1) {
+            this.startNo = startNo;
+        }
+    }
+
+    public boolean isInited() {
+        return jedis.exists(storageKey);
+    }
+
+    public boolean isErrorExists() {
+        return jedis.exists(this.errorKey);
+    }
+
+    public void initData() {
+        if (!isInited()) {
+            readHistoryDataByYear();
+        }
+
+        if (isErrorExists()) {
+            loadErrorRecordFromInternet();
+        }
+    }
+
+    public void readHistoryDataByYear() {
+        List<Record> records = Lists.newArrayList();
+
+        for (int index = this.startNo; index < maxForYear; index++) {
+            String no = formatNo(index);
             try {
                 Optional<Record> recordOpt = getRecord(no);
                 if (recordOpt.isPresent()) {
-                    records.put(index, recordOpt.get());
+                    records.add(recordOpt.get());
                 } else {
-                    
+                    break;
                 }
             } catch (InitHistoryDataException e) {
-                e.printStackTrace();
+                jedis.sadd(errorKey, no);
+                logger.error("init history data error: " + no);
             }
-
+            System.out.println("read data " + no);
         }
 
-        return records;
+        Map<String, String> datas = records.parallelStream().collect(Collectors.toMap(Record::getNo, Record::toString));
+
+        jedis.hset(storageKey, datas);
+
+
     }
 
     private Optional<Record> getRecord(String no) throws InitHistoryDataException {
@@ -99,8 +138,8 @@ public class ReadData {
         return new Record(issueNo, reds, Integer.parseInt(res[6]));
     }
 
-    private String formatNo(int year, int index) {
+    private String formatNo(int index) {
         String sub = "000" + index;
-        return String.valueOf(year) + sub.substring(sub.length() - 3, sub.length());
+        return year + sub.substring(sub.length() - 3, sub.length());
     }
 }

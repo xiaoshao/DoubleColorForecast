@@ -17,6 +17,10 @@ public class Record {
         this.blueBalls = blueBalls;
     }
 
+    public Record(ArrayList<Integer> redBalls, int blueBalls) {
+        
+    }
+
 
     @Override
     public String toString() {
@@ -61,5 +65,10 @@ public class Record {
         final Record other = (Record) obj;
         return Objects.equal(this.redBalls, other.redBalls)
                 && Objects.equal(this.blueBalls, other.blueBalls);
+    }
+
+
+    public String getNo() {
+        return no;
     }
 }

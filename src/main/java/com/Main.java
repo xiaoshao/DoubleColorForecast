@@ -15,13 +15,7 @@ public class Main {
 
     public static void main(String[] args){
 
-        ReadData readData = new ReadData();
+        HistoryDataInit historyDataInit = new HistoryDataInit();
 
-//        readData.getRecord("2003001");
-//        Map<Integer, Map<Integer, int[]>> allDatas = readData.readAllData();
-//
-//        RedisAccess redisAccess = new RedisAccess(host, port);
-//
-//        redisAccess.addDatas(allDatas);
     }
 }
