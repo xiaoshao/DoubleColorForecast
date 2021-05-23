@@ -8,7 +8,7 @@ public class Const {
     public static final int MAX_BLUE = 15;
     public static final int MAX_RED = 31;
 
-    public static final Record OVER_TAG = new Record(Lists.newArrayList(-1, -1, -1, -1, -1, -1), 1);
+    public static final Record OVER_TAG = new Record("0", Lists.newArrayList(-1, -1, -1, -1, -1, -1), 1);
     public static final String SUMMARY_RANGE_KEY = "range|summary";
     public static final String SIMILAR_RANGE_KEY = "range|similar";
     public static final String AVG_RANGE_KEY = "range|avg";

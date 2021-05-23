@@ -1,4 +1,4 @@
-package com.data.persistance;
+package com.data.persistence;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

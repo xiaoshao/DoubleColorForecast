@@ -12,9 +12,8 @@ import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
  * Created by zwshao on 6/4/2018.
@@ -49,16 +48,33 @@ public class ReadData {
     }
 
     public boolean isErrorExists() {
-        return jedis.exists(this.errorKey);
+        return jedis.exists(this.errorKey) && jedis.scard(this.errorKey) > 0;
     }
 
-    public void initData() {
+    public void initData() throws InitHistoryDataException {
         if (!isInited()) {
             readHistoryDataByYear();
         }
 
         if (isErrorExists()) {
             loadErrorRecordFromInternet();
+        }
+    }
+
+    private void loadErrorRecordFromInternet() throws InitHistoryDataException {
+        Set<String> errorMembers = jedis.smembers(this.errorKey);
+
+        for (String errorMember : errorMembers) {
+            Optional<Record> recordOpt = getRecord(errorMember);
+
+            if (recordOpt.isPresent()) {
+                jedis.hset(this.storageKey, recordOpt.get().getNo(), recordOpt.toString());
+                jedis.srem(this.errorKey, errorMember);
+            }
+        }
+
+        if (jedis.scard(this.errorKey) == 0) {
+            jedis.del(this.errorKey);
         }
     }
 
@@ -81,11 +97,7 @@ public class ReadData {
             System.out.println("read data " + no);
         }
 
-        Map<String, String> datas = records.parallelStream().collect(Collectors.toMap(Record::getNo, Record::toString));
-
-        jedis.hset(storageKey, datas);
-
-
+        records.forEach(record -> jedis.hset(storageKey, record.getNo(), record.toString()));
     }
 
     private Optional<Record> getRecord(String no) throws InitHistoryDataException {

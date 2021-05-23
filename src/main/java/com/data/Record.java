@@ -1,6 +1,7 @@
 package com.data;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,24 @@ public class Record {
         this.blueBalls = blueBalls;
     }
 
-    public Record(ArrayList<Integer> redBalls, int blueBalls) {
-        
+    public Record(String no, List<Integer> balls) {
+        this.no = no;
+        this.redBalls = balls.subList(0, 6);
+        this.blueBalls = balls.get(6);
     }
 
+    public List<Integer> getBalls() {
+        List<Integer> balls = Lists.newArrayList();
+
+        balls.addAll(redBalls);
+        balls.add(blueBalls);
+
+        return balls;
+    }
+
+    public List<Integer> getRedBalls() {
+        return redBalls;
+    }
 
     @Override
     public String toString() {
