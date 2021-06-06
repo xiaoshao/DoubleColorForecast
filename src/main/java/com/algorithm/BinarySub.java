@@ -13,9 +13,9 @@ public class BinarySub extends BinaryAlgorithm {
     }
 
     @Override
-    public double calculate(Record record, Record otherRecord) {
+    public double calculate(Record record, Record history) {
         List<Integer> balls = record.getBalls();
-        List<Integer> otherBalls = otherRecord.getBalls();
+        List<Integer> otherBalls = history.getBalls();
 
         double summary = 0;
         for (int index = 0; index < balls.size(); index++) {
