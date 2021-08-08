@@ -1,10 +1,17 @@
 package com.algorithm;
 
 import com.data.Record;
+import com.data.persistence.DoubleColorPersistence;
+
+import java.util.List;
 
 import static com.algorithm.AlgorithmConst.SINGLE_AVERAGE;
 
-public class SingleAverage implements SingleAlgorithm {
+public class SingleAverage extends SingleAlgorithm {
+
+    public SingleAverage(DoubleColorPersistence persistence, List<Record> newRecords) {
+        super(persistence, newRecords);
+    }
 
     @Override
     public double calculate(Record record) {

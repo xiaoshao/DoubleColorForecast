@@ -1,26 +1,49 @@
 package com.algorithm;
 
 import com.data.Record;
+import com.data.persistence.DoubleColorPersistence;
 
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
-public interface SingleAlgorithm extends Algorithm{
-    double calculate(Record record);
+public abstract class SingleAlgorithm implements Algorithm {
+    List<Record> newRecords;
+    Map.Entry<Double, Double> restriction;
+    List<Record> allRecords;
 
-    default Map.Entry<Double, Double> calculate(List<Record> balls) {
-        double min = Double.MIN_VALUE;
-        double max = Double.MAX_VALUE;
+    public SingleAlgorithm(DoubleColorPersistence persistence, List<Record> newRecords) {
+        this.newRecords = newRecords;
+        this.allRecords = persistence.getAllRecords();
+        this.restriction = persistence.readRestriction(getRestrictionName());
+    }
 
-        for (Record ball : balls) {
+    public abstract double calculate(Record record);
+
+    public Map.Entry<Double, Double> calculate() {
+        if ((newRecords == null || newRecords.size() == 0) && restriction != null) {
+            return restriction;
+        }
+
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        List<Record> target;
+
+        if (restriction == null) {
+            target = allRecords;
+        } else {
+            target = newRecords;
+            min = Math.min(restriction.getKey(), restriction.getValue());
+            max = Math.max(restriction.getKey(), restriction.getValue());
+        }
+        for (Record ball : target) {
             double value = calculate(ball);
 
-            if(min > value) {
+            if (min > value) {
                 min = value;
             }
 
-            if(max < value) {
+            if (max < value) {
                 max = value;
             }
         }

@@ -1,6 +1,7 @@
 package com.algorithm;
 
 import com.data.Record;
+import com.data.persistence.DoubleColorPersistence;
 
 import java.util.List;
 
@@ -8,8 +9,8 @@ import static com.algorithm.AlgorithmConst.BINARY_SUB;
 
 public class BinarySub extends BinaryAlgorithm {
 
-    public BinarySub(List<Record> records) {
-        super(records);
+    public BinarySub(DoubleColorPersistence persistence, List<Record> newRecords) {
+        super(persistence, newRecords);
     }
 
     @Override

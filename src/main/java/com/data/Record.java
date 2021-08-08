@@ -86,4 +86,31 @@ public class Record {
     public String getNo() {
         return no;
     }
+
+    public Record next() {
+        if (blueBalls < 15) {
+            List<Integer> redBalls = Lists.newArrayList();
+            redBalls.addAll(this.redBalls);
+            return new Record("", redBalls, blueBalls + 1);
+        } else {
+
+            List<Integer> redBalls = Lists.newArrayList();
+            redBalls.addAll(this.redBalls);
+
+            for (int index = 5; index >= 0; index--) {
+                if (redBalls.get(index) == (31 - (5 - index))) {
+                    redBalls.set(index, redBalls.get(index - 1) + 1);
+                } else {
+                    redBalls.set(index, redBalls.get(index) + 1);
+                    for (int innerIndex = index + 1; innerIndex <= 5; innerIndex++) {
+                        redBalls.set(innerIndex, redBalls.get(innerIndex - 1) + 1);
+                    }
+
+                    break;
+                }
+            }
+
+            return new Record("", redBalls, 1);
+        }
+    }
 }

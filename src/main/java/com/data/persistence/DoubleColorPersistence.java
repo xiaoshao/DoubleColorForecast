@@ -3,6 +3,7 @@ package com.data.persistence;
 import com.data.Record;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface DoubleColorPersistence {
@@ -17,5 +18,23 @@ public interface DoubleColorPersistence {
 
     Record getRecord(String no);
 
+    List<Record> getAllRecords();
+
     void saveRestriction(Map<String, Map.Entry<Double, Double>> restrictions);
+
+    Map<String, Map.Entry<Double, Double>> readAllRestriction();
+
+    Map.Entry<Double, Double> readRestriction(String key);
+
+    void saveProcess(int pageNo);
+
+    int getProcess();
+
+    void saveMaybeRecord(Record record);
+
+    List<Record> getAllMaybeRecords();
+
+    Record getGeneratedLastRecord();
+
+    void saveGeneratedLastRecord(Record record);
 }

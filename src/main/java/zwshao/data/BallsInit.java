@@ -2,7 +2,6 @@ package zwshao.data;
 
 import com.data.Record;
 import com.data.persistence.DoubleColorPersistence;
-import com.data.persistence.DoubleColorPersistenceFactory;
 import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
@@ -17,35 +16,77 @@ import java.util.zip.GZIPInputStream;
 
 public class BallsInit {
 
+    private String baseUrlPrefix1 = "http://kaijiang.zhcw.com/zhcw/inc/ssq/ssq_wqhg.jsp?pageNum=";
+    //    private String baseUrlPrefix = "http://kaijiang.zhcw.com/zhcw/html/ssq/list_";
+//    private String baseUrlSuffix = ".html";
+//    String homeUrl = "http://kaijiang.zhcw.com/zhcw/html/ssq/list_1.html";
+    private String homeUrl = "http://kaijiang.zhcw.com/zhcw/inc/ssq/ssq_wqhg.jsp?pageNum=1";
 
-    private String baseUrlPrefix = "http://kaijiang.zhcw.com/zhcw/html/ssq/list_";
-    private String baseUrlSuffix = ".html";
-    String homeUrl = "http://kaijiang.zhcw.com/zhcw/html/ssq/list_1.html";
-    private DoubleColorPersistence doubleColorPersistence;
+    private int pageCount = 0;
+
+    private List<Record> latestBalls = Lists.newArrayList();
+
+    private List<Record> historyRecords;
 
     public BallsInit(DoubleColorPersistence doubleColorPersistence) {
-        this.doubleColorPersistence = doubleColorPersistence;
+        historyRecords = doubleColorPersistence.getAllRecords();
     }
 
-    public List<Record> readAllBalls() throws Exception {
-        List<Record> latestBalls = Lists.newArrayList();
-
+    public List<Record> readNewBalls() throws Exception {
         String pageCountContent = getHtmlString(homeUrl);
-        int pageCount = getPageCount(pageCountContent);
+        int totalCount = getTotalCount(pageCountContent);
+        pageCount = getPageCount(pageCountContent);
 
-        if (pageCount > 0) {
-            for (int index = 1; index <= pageCount; index++) {
-                latestBalls.addAll(readBall4SpecifiedPage(index));
+        if (pageCount > 0 && totalCount > 0) {
+            for (int startPage = 0; startPage <= pageCount; startPage++) {
+                List<Record> recordsInSpecifiedPage = tryReadRecordsInSpecifiedPage(startPage);
+
+                for (Record record : recordsInSpecifiedPage) {
+                    if (!historyRecords.contains(record)) {
+                        latestBalls.add(record);
+                    }
+                }
+
+                if ((latestBalls.size() + historyRecords.size()) == totalCount) {
+                    break;
+                }
             }
 
             return latestBalls;
         } else {
-            throw new Exception("the page count is less than 0");
+            throw new Exception("the page count is less than 0 or total count is less than 0");
         }
     }
 
-    private List<Record> readBall4SpecifiedPage(int pageNo) throws Exception {
-        String url = baseUrlPrefix + pageNo + baseUrlSuffix;
+    private List<Record> tryReadRecordsInSpecifiedPage(int pageNo) throws Exception {
+        for (int index = 0; index < 10; index++) {
+            try {
+                List<Record> records = readRecordsInSpecifiedPage(pageNo);
+
+                System.out.println("finish to read page no " + pageNo);
+                return records;
+            } catch (Exception ex) {
+                if (index < 9) {
+                    Thread.sleep(2000);
+                    continue;
+                }
+
+                throw ex;
+            }
+        }
+
+        System.out.println("finish to read page no after tried 10 times " + pageNo);
+
+        return null;
+    }
+
+    private List<Record> readRecordsInSpecifiedPage(int pageNo) throws Exception {
+        String url = null;
+//        if (pageNo >= 70) {
+        url = baseUrlPrefix1 + pageNo;
+//        } else {
+//            url = baseUrlPrefix + pageNo + baseUrlSuffix;
+//        }
         String pageContent = getHtmlString(url);
         if (pageContent != null && !pageContent.equals("")) {
             try {
@@ -56,6 +97,10 @@ public class BallsInit {
         } else {
             throw new Exception("lost page " + pageNo);
         }
+    }
+
+    public List<Record> getHistoryRecords() {
+        return historyRecords;
     }
 
     private List<Record> parseRecords(String pageContent) throws Exception {
@@ -171,16 +216,37 @@ public class BallsInit {
         return content;
     }
 
-    private int getPageCount(String result) {
+    private int getPageCount(String pageContent) {
         String regex = "\\d+\">末页";
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(result);
+        Matcher matcher = pattern.matcher(pageContent);
         String[] splits = null;
         while (matcher.find()) {
             String content = matcher.group();
             splits = content.split("\"");
             break;
         }
+        if (splits != null && splits.length == 2) {
+            String countString = splits[0];
+            if (countString != null && !countString.equals("")) {
+                return Integer.parseInt(countString);
+            }
+
+        }
+        return 0;
+    }
+
+    private int getTotalCount(String pageContent) {
+        String regex = "\\d+ </strong>条记录";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(pageContent);
+        String[] splits = null;
+        while (matcher.find()) {
+            String content = matcher.group();
+            splits = content.split(" ");
+            break;
+        }
+
         if (splits != null && splits.length == 2) {
             String countString = splits[0];
             if (countString != null && !countString.equals("")) {
