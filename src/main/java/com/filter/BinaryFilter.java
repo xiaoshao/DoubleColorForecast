@@ -13,7 +13,7 @@ public class BinaryFilter implements BallFilter {
     private double max;
     private double min;
 
-    public BinaryFilter(BinaryAlgorithm algorithm, List<Record> historyRecords, double max, double min) {
+    public BinaryFilter(BinaryAlgorithm algorithm, List<Record> historyRecords, double min, double max) {
         this.algorithm = algorithm;
         this.historyRecords = historyRecords;
         this.max = max;
@@ -21,7 +21,7 @@ public class BinaryFilter implements BallFilter {
     }
 
     @Override
-    public boolean filter(Record record) {
+    public boolean filter(final Record record) {
         for (Record historyRecord : historyRecords) {
 
             double value = algorithm.calculate(record, historyRecord);

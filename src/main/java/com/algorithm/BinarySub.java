@@ -4,6 +4,7 @@ import com.data.Record;
 import com.data.persistence.DoubleColorPersistence;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.algorithm.AlgorithmConst.BINARY_SUB;
 
@@ -30,5 +31,10 @@ public class BinarySub extends BinaryAlgorithm {
     @Override
     public String getRestrictionName() {
         return BINARY_SUB;
+    }
+
+    @Override
+    public boolean filterMap(Map.Entry<Integer, Integer> resultMapEntry) {
+        return resultMapEntry.getValue() > 50;
     }
 }

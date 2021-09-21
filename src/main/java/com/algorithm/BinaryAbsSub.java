@@ -4,6 +4,7 @@ import com.data.Record;
 import com.data.persistence.DoubleColorPersistence;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.algorithm.AlgorithmConst.BINARY_ABS_SUB;
 
@@ -32,4 +33,9 @@ public class BinaryAbsSub extends BinaryAlgorithm {
         return BINARY_ABS_SUB;
     }
 
+
+    @Override
+    public boolean filterMap(Map.Entry<Integer, Integer> resultMapEntry) {
+        return resultMapEntry.getValue() > 100;
+    }
 }

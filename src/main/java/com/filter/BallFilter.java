@@ -4,5 +4,5 @@ import com.data.Record;
 
 public interface BallFilter {
 
-    boolean filter(Record record);
+    boolean filter(final Record record);
 }

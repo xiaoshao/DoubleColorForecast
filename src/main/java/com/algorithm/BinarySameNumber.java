@@ -2,8 +2,10 @@ package com.algorithm;
 
 import com.data.Record;
 import com.data.persistence.DoubleColorPersistence;
+import com.google.common.collect.Lists;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.algorithm.AlgorithmConst.BINARY_SAME_NUMBER;
 
@@ -15,16 +17,22 @@ public class BinarySameNumber extends BinaryAlgorithm {
 
     @Override
     public double calculate(Record record, Record history) {
-        List<Integer> balls = record.getBalls();
-        List<Integer> otherBalls = history.getBalls();
+        List<Integer> balls = record.getRedBalls();
+        List<Integer> otherBalls = history.getRedBalls();
 
-        balls.retainAll(otherBalls);
+        List<Integer> computeBalls = Lists.newArrayList(balls);
+        computeBalls.retainAll(otherBalls);
 
-        return balls.size();
+        return computeBalls.size();
     }
 
     @Override
     public String getRestrictionName() {
         return BINARY_SAME_NUMBER;
+    }
+
+    @Override
+    public boolean filterMap(Map.Entry<Integer, Integer> resultMapEntry) {
+        return resultMapEntry.getKey() <= 3;
     }
 }

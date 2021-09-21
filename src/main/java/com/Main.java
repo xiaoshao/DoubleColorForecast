@@ -12,6 +12,7 @@ import com.generator.BallGeneratorFactory;
 import com.google.common.collect.Maps;
 import zwshao.data.BallsInit;
 
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,14 +70,19 @@ public class Main {
         List<Algorithm> algorithms = AlgorithmFactory.createAlgorithm(persistence, newRecords);
         Map<String, Map.Entry<Double, Double>> restrictions = Maps.newHashMap();
 
+        Map<String, Map.Entry<Double, Double>> updatedRestriction = Maps.newHashMap();
         for (Algorithm algorithm : algorithms) {
             Map.Entry<Double, Double> restriction = algorithm.calculate();
             String restrictionName = algorithm.getRestrictionName();
             System.out.println("calculated " + restrictionName + " value ( " + restriction.getKey() + ", " + restriction.getValue() + ")");
             restrictions.put(restrictionName, restriction);
+
+            Map.Entry<Integer, Integer> updatedRestrictionItem = algorithm.getUpdatedRestriction();
+
+            updatedRestriction.put(restrictionName, new AbstractMap.SimpleEntry<Double,Double>(Double.valueOf(updatedRestrictionItem.getKey()), Double.valueOf(updatedRestrictionItem.getValue())));
         }
 
-        persistence.saveRestriction(restrictions);
+        persistence.saveRestriction(updatedRestriction);
     }
 
 
