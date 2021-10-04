@@ -79,7 +79,11 @@ public class Main {
 
             Map.Entry<Integer, Integer> updatedRestrictionItem = algorithm.getUpdatedRestriction();
 
-            updatedRestriction.put(restrictionName, new AbstractMap.SimpleEntry<Double,Double>(Double.valueOf(updatedRestrictionItem.getKey()), Double.valueOf(updatedRestrictionItem.getValue())));
+            if (updatedRestrictionItem == null) {
+                continue;
+            }
+
+            updatedRestriction.put(restrictionName, new AbstractMap.SimpleEntry<Double, Double>(Double.valueOf(updatedRestrictionItem.getKey()), Double.valueOf(updatedRestrictionItem.getValue())));
         }
 
         persistence.saveRestriction(updatedRestriction);

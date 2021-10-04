@@ -33,6 +33,6 @@ public class BinarySameNumber extends BinaryAlgorithm {
 
     @Override
     public boolean filterMap(Map.Entry<Integer, Integer> resultMapEntry) {
-        return resultMapEntry.getKey() <= 3;
+        return resultMapEntry.getKey() <= 4;
     }
 }

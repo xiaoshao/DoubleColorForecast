@@ -78,6 +78,8 @@ public class Record {
         }
 
         final Record other = (Record) obj;
+
+
         return Objects.equal(this.redBalls, other.redBalls)
                 && Objects.equal(this.blueBalls, other.blueBalls);
     }

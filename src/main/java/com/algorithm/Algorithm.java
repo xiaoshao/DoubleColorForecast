@@ -18,6 +18,9 @@ public interface Algorithm {
     default Map.Entry<Integer, Integer> getUpdatedRestriction() {
         Map<Integer, Integer> resultMap = getResultMap();
 
+        if (resultMap == null || resultMap.size() == 0) {
+            return null;
+        }
         List<Integer> keySet = resultMap.entrySet().stream()
                 .map(Map.Entry::getKey)
                 .sorted(Comparator.comparing(Integer::valueOf))

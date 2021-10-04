@@ -1,0 +1,36 @@
+0 :  maybe : 19 history: 33
+1 :  maybe : 16 history: 28
+2 :  maybe : 18 history: 24
+3 :  maybe : 17 history: 31
+4 :  maybe : 22 history: 21
+5 :  maybe : 21 history: 23
+6 :  maybe : 20 history: 29
+7 :  maybe : 26 history: 25
+8 :  maybe : 23 history: 30
+9 :  maybe : 24 history: 19
+10 :  maybe : 29 history: 27
+11 :  maybe : 25 history: 17
+12 :  maybe : 30 history: 18
+13 :  maybe : 27 history: 20
+14 :  maybe : 31 history: 32
+15 :  maybe : 28 history: 22
+16 :  maybe : 8 history: 26
+17 :  maybe : 11 history: 15
+18 :  maybe : 10 history: 4
+19 :  maybe : 12 history: 5
+20 :  maybe : 13 history: 13
+21 :  maybe : 9 history: 10
+22 :  maybe : 14 history: 3
+23 :  maybe : 7 history: 2
+24 :  maybe : 15 history: 8
+25 :  maybe : 2 history: 11
+26 :  maybe : 3 history: 16
+27 :  maybe : 4 history: 12
+28 :  maybe : 6 history: 9
+29 :  maybe : 5 history: 6
+30 :  maybe : 1 history: 7
+31 :  history: 14
+32 :  history: 1
+
+
+1 6 7 9 12 14
