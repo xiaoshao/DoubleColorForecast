@@ -16,22 +16,23 @@ apply plugin: 'idea'
 repositories {
     // Use 'jcenter' for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenLocal()
+    mavenCentral()
 }
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
     // The production code uses the SLF4J logging API at compile time
-    compile 'org.slf4j:slf4j-api:1.7.21'
-    compile group: "ch.qos.logback", name: "logback-core", version: "1.2.3"
-    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
-    compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
-    compile group: 'com.google.guava', name: 'guava', version: '23.0'
-    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.68'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.8.0'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
-    testCompile group: 'org.powermock', name: 'powermock-module-testng', version: '1.7.4'
+    implementation 'org.slf4j:slf4j-api:1.7.21'
+    implementation group: "ch.qos.logback", name: "logback-core", version: "1.2.3"
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
+    implementation group: 'redis.clients', name: 'jedis', version: '2.9.0'
+    implementation group: 'com.google.guava', name: 'guava', version: '23.0'
+    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.68'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.8.0'
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
+    testImplementation group: 'org.powermock', name: 'powermock-module-testng', version: '1.7.4'
 }
 
