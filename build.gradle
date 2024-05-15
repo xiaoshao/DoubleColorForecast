@@ -20,6 +20,9 @@ repositories {
     mavenCentral()
 }
 
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
 // In this section you declare the dependencies for your production and test code
 dependencies {
     // The production code uses the SLF4J logging API at compile time
@@ -29,10 +32,13 @@ dependencies {
     implementation group: 'redis.clients', name: 'jedis', version: '2.9.0'
     implementation group: 'com.google.guava', name: 'guava', version: '23.0'
     implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.68'
+    implementation 'com.google.guava:guava:33.1.0-jre'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+//    implementation 'com.google.common:google-collect:0.5'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.8.0'
     testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
+//    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
     testImplementation group: 'org.powermock', name: 'powermock-module-testng', version: '1.7.4'
 }
 
